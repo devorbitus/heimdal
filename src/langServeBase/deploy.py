@@ -1,22 +1,18 @@
 from fastapi import FastAPI
 from langserve import add_routes
-#from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 
-###
-#def ourRunnable(input_data):
-#    return {"output": input_data["input"] * 2} 
-
+def modify_input(input_data):
+    print("input_data")
+    print(input_data)
+    input_data['output'] = int(input_data.get('input', 0)) * 3
+    return input_data
 
 runnable = RunnableParallel(
     passed=RunnablePassthrough(),
-    extra=RunnablePassthrough.assign(output=lambda x: x["input"] * 3),
-    modified=lambda x: x["input"] + 1,
+    extra=RunnablePassthrough(),
+    modified=modify_input,
 )
 
 app = FastAPI()
- 
-#add_routes(app, RunnableLambda(
-#    ourRunnable
-#))
 add_routes(app, runnable)
